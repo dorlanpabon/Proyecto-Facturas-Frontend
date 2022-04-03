@@ -47,59 +47,54 @@ const auth = {
     },
     actions: {
         //actions invoices
-        async getInvoices({ commit }) {
+        async getInvoices({ commit, dispatch }) {
             commit('setLoading', true)
             try {
                 const response = await axios.get('/invoices')
                 commit('setInvoices', response.data)
             } catch (error) {
-                commit('setError', error.message)
-                commit('setIsError', true)
+                dispatch('error', error)
             }
             commit('setLoading', false)
         },
-        async getInvoice({ commit }, id) {
+        async getInvoice({ commit, dispatch }, id) {
             commit('setInvoice', [])
             commit('setLoading', true)
             try {
                 const response = await axios.get(`/invoices/${id}`)
                 commit('setInvoice', response.data)
             } catch (error) {
-                commit('setError', error.message)
-                commit('setIsError', true)
+                dispatch('error', error)
             }
             commit('setLoading', false)
         },
-        async createInvoice({ commit }, invoice) {
+        async createInvoice({ commit, dispatch }, invoice) {
             commit('setLoading', true)
             try {
                 const response = await axios.post('/invoices', invoice)
                 commit('setInvoice', response.data)
             } catch (error) {
-                commit('setError', error.message)
-                commit('setIsError', true)
+                dispatch('error', error)
             }
             commit('setLoading', false)
         },
-        async updateInvoice({ commit }, invoice) {
+        async updateInvoice({ commit, dispatch }, invoice) {
             commit('setLoading', true)
             try {
                 const response = await axios.put(`/invoices/${invoice.id}`, invoice)
                 commit('setInvoice', response.data)
             } catch (error) {
-                commit('setError', error.message)
-                commit('setIsError', true)
+                dispatch('error', error)
             }
             commit('setLoading', false)
         },
-        async deleteInvoice({ commit }, id) {
+        async deleteInvoice({ commit, dispatch }, id) {
             commit('setLoading', true)
             try {
                 await axios.delete(`/invoices/${id}`)
-                commit('clearState')
+                //commit('clearState')
             } catch (error) {
-                commit('setError', error.message)
-                commit('setIsError', true)
+                dispatch('error', error)
             }
             commit('setLoading', false)
         },
@@ -109,6 +104,15 @@ const auth = {
         clearError: ({ commit }) => {
             commit('clearError')
         },
+        error: ({ commit, dispatch }, error) => {
+            //verify status code 401 unauthorized
+            if (error.response.status === 401) {
+                dispatch('logout')
+            } else {
+                commit('setError', error.message)
+                commit('setIsError', true)
+            }
+        }
     }
 }
 
