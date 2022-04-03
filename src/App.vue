@@ -10,8 +10,8 @@ export default {
   methods: {
     ...mapActions(["getToken"]),
   },
-  mounted() {
-    this.getToken();
+  async created() {
+    await this.getToken();
   },
 };
 </script>
