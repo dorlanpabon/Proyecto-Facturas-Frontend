@@ -64,7 +64,10 @@ const auth = {
         }
     },
     actions: {
-        //actions invoices
+        /**
+         *  @description Obtener estructura de una nueva factura   
+         * @param {Object} param0 Action context Vuex
+         */
         getInvoiceNew: async ({ commit, dispatch }) => {
             commit('setLoading', true)
             //get customers
@@ -93,6 +96,10 @@ const auth = {
             commit('setLoading', false)
 
         },
+        /**
+         *  @description Obtener todas las facturas
+         * @param {Object} param0 Action context Vuex
+         */
         async getInvoices({ commit, dispatch }) {
             commit('setLoading', true)
             try {
@@ -104,6 +111,11 @@ const auth = {
             }
             commit('setLoading', false)
         },
+        /**
+         *  @description Obtener una factura por id
+         * @param {Object} param0 Action context Vuex
+         * @param {Number} id Id de la factura
+         */
         async getInvoice({ commit, dispatch }, id) {
             commit('setInvoice', [])
             commit('setLoading', true)
@@ -115,6 +127,11 @@ const auth = {
             }
             commit('setLoading', false)
         },
+        /**
+         *  @description Crear una factura
+         * @param {Object} param0 Action context Vuex
+         * @param {Object} invoice Factura a guardar
+         */
         async createInvoice({ commit, dispatch }, invoice) {
             commit('setLoading', true)
             try {
@@ -127,6 +144,11 @@ const auth = {
             }
             commit('setLoading', false)
         },
+        /**
+         *  @description Actualizar una factura
+         * @param {Object} param0 Action context Vuex
+         * @param {Object} invoice Factura a actualizar
+         */
         async updateInvoice({ commit, dispatch }, invoice) {
             commit('setLoading', true)
             try {
@@ -138,6 +160,11 @@ const auth = {
             }
             commit('setLoading', false)
         },
+        /**
+         *  @description Eliminar una factura
+         * @param {Object} param0 Action context Vuex
+         * @param {Number} id Id de la factura
+         */
         async deleteInvoice({ commit, dispatch }, id) {
             commit('setLoading', true)
             try {
@@ -147,12 +174,21 @@ const auth = {
             }
             commit('setLoading', false)
         },
+        /**
+         *  @description Añadir un item a la factura seleccionada
+         * @param {Object} param0  Action context Vuex
+         */
         addInvoiceItem({ commit, getters }) {
             //Add invoice item to invoice
             commit('setLoading', true)
             getters.invoice.invoice_items.push({})
             commit('setLoading', false)
         },
+        /**
+         *  @description Actualizar un item de la factura seleccionada
+         * @param {Object} param0 Action context Vuex
+         * @param {Object} param1 Item a actualizar
+         */
         async updateInvoiceItemId({ commit, getters, dispatch }, { item, index }) {
             //Update invoice item id
             commit('setLoading', true)
@@ -190,6 +226,11 @@ const auth = {
             }
             commit('setLoading', false)
         },
+        /**
+         *  @description Actualizar el cliente de la factura a crear
+         * @param {Object} param0 Action context Vuex
+         * @param {Object} invoice Actualizar el cliente de la factura a crear
+         */
         updateInvoiceCustomer({ commit, getters }, invoice) {
             //Update invoice customer
             commit('setLoading', true)
@@ -202,6 +243,11 @@ const auth = {
             })
             commit('setLoading', false)
         },
+        /**
+         *  @description  Actualizar items de la factura a crear
+         * @param {Object} param0 Action context Vuex
+         * @param {Object} invoice Factura a actualizar
+         */
         updateInvoiceItem({ commit, dispatch }, invoice) {
             //update item invoice
             commit('setLoading', true)
@@ -214,6 +260,10 @@ const auth = {
             commit('setInvoice', invoice)
             commit('setLoading', false)
         },
+        /**
+         *  @description Actualizar totales de la factura
+         * @param {Object} param0 Action context Vuex
+         */
         updateTotals({ commit, getters }) {
             //update invoice totals
             commit('setLoading', true)
@@ -228,6 +278,11 @@ const auth = {
             commit('setInvoice', invoice)
             commit('setLoading', false)
         },
+        /**
+         *  @description Eliminar un item de la factura seleccionada
+         * @param {Object} param0 Action context Vuex
+         * @param {Number} itemID Id del item a eliminar
+         */
         deleteInvoiceItem({ commit, getters, dispatch }, itemID) {
             //delete item invoice
             commit('setLoading', true)
@@ -236,6 +291,11 @@ const auth = {
             dispatch('updateTotals')
             commit('setLoading', false)
         },
+        /**
+         *  @description Ordenar las facturas por campo
+         * @param {Object} param0 Action context Vuex
+         * @param {Object} param1 Campo y orden de la consulta
+         */
         orderByField({ commit, getters }, { field, order }) {
             //if order is null, set order to asc
             if (order == null) {
@@ -292,6 +352,11 @@ const auth = {
             commit('setInvoices', invoices)
             commit('setLoading', false)
         },
+        /**
+         *  @description Filtrar las facturas por campo y valor
+         * @param {Object} param0 Action context Vuex
+         * @param {Object} param1 Campo y valor de la consulta 
+         */
         filterBy({ commit, getters }, { field, value }) {
             commit('setInvoices', getters.invoicesCopy)
             //filter by
@@ -314,12 +379,25 @@ const auth = {
             commit('setInvoices', invoices)
             commit('setLoading', false)
         },
+        /**
+         *  @description Limpiar todos los state
+         * @param {Object} param0 Action context Vuex
+         */
         clearState: ({ commit }) => {
             commit('clearState')
         },
+        /**
+         *  @description Limpiar los errores
+         * @param {Object} param0 Action context Vuex
+         */
         clearError: ({ commit }) => {
             commit('clearError')
         },
+        /**
+         *  @description Error al realizar peticiones
+         * @param {Object} param0 Action context Vuex
+         * @param {Object} error Error a usar axios
+         */
         error: ({ commit, dispatch }, error) => {
             //verify status code 401 unauthorized
             if (error.response.status === 401) {

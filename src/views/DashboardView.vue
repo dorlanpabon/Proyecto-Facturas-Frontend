@@ -190,8 +190,7 @@
                       <span
                         class="text-primary"
                         @click="
-                          (filterByField = 'customer.name'),
-                            (field = 'Comprador')
+                          (filterByField = 'customer.name'), (field = 'Cliente')
                         "
                       >
                         <i class="fas fa-search"></i>

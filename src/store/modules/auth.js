@@ -58,29 +58,28 @@ const auth = {
         }
     },
     actions: {
+        /**
+         * @description Funcion para iniciar sesion
+         * @param {Object} param0 Action context Vuex
+         * @param {String} token Token de autenticación
+         */
         setToken: ({ commit }, token) => {
             commit('setToken', token)
         },
-        setUser: ({ commit }, user) => {
-            commit('setUser', user)
-        },
-        setLoading: ({ commit }, isLoading) => {
-            commit('setLoading', isLoading)
-        },
-        setError: ({ commit }, error) => {
-            commit('setError', error)
-        },
-        clearError: ({ commit }) => {
-            commit('clearError')
-        },
-        clearState: ({ commit }) => {
-            commit('clearState')
-        },
+        /**
+         * @description Funcion para salir de sesion
+         * @param {Object} param0 Action context Vuex
+         */
         logout: ({ commit }) => {
             commit('logout')
             commit('clearState')
             router.push('/')
         },
+        /**
+         * @description Funcion para autenticar al usuario
+         * @param {Object} param0 Action context Vuex
+         * @param {Object} user Objeto con los datos del usuario
+         */
         login: async ({ commit }, user) => {
             try {
                 //set token
@@ -99,10 +98,18 @@ const auth = {
                 commit('setError', error.response.data)
             }
         },
+        /**
+         * @description Funcion para limpiear el state
+         * @param {Object} param0 Action context Vuex
+         */
         clearErrorAndState: ({ commit }) => {
             commit('clearError')
             commit('clearState')
         },
+        /**
+         * @description Funcion para obtener token y validarlo
+         * @param {Object} context Action context Vuex
+         */
         getToken: async (context) => {
             if (localStorage.getItem('token')) {
                 console.log('token found')
@@ -112,6 +119,10 @@ const auth = {
 
             }
         },
+        /**
+         * @description Funcion para refrescar el token
+         * @param {Object} context Action context Vuex
+         */
         refreshToken: async (context) => {
             try {
                 await axios.post('/auth/me')

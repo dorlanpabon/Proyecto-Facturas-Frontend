@@ -30,6 +30,12 @@ const router = createRouter({
   routes
 })
 
+/**
+ * @description This function is called when the route is changed.
+ * @param {Object} to The route that is being navigated to.
+ * @param {Object} from The route that is being navigated away from.
+ * @param {Function} next The function that should be called to continue the navigation.
+ */
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (store.getters.isLoggedIn) {
