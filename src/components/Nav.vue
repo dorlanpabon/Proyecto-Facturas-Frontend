@@ -117,7 +117,7 @@
             >
               <li>
                 <a class="dropdown-item" href="#" v-on:click="logout">
-                  Logout
+                  Salir
                 </a>
               </li>
             </ul>

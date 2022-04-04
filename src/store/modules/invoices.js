@@ -92,10 +92,85 @@ const auth = {
             commit('setLoading', true)
             try {
                 await axios.delete(`/invoices/${id}`)
-                //commit('clearState')
             } catch (error) {
                 dispatch('error', error)
             }
+            commit('setLoading', false)
+        },
+        addInvoiceItem({ commit, getters }) {
+            //Add invoice item to invoice
+            commit('setLoading', true)
+            getters.invoice.invoice_items.push({})
+            commit('setLoading', false)
+        },
+        async updateInvoiceItemId({ commit, getters, dispatch }, { item, index }) {
+            //Update invoice item id
+            commit('setLoading', true)
+            try {
+                getters.invoice.invoice_items[index].id = item.id
+                console.log("llego")
+                //get the item from database
+                var res = await axios.get(`/items/${item.item_id}`)
+                if (res.data.id) {
+                    console.log(res)
+                    let invoice = getters.invoice
+                    console.log(invoice)
+                    invoice.invoice_items[index].item_id = res.data.id
+                    invoice.invoice_items[index].description = res.data.description
+                    invoice.invoice_items[index].price = res.data.price_sell
+                    invoice.invoice_items[index].quantity = 1
+                    invoice.invoice_items[index].total = invoice.invoice_items[index].quantity * invoice.invoice_items[index].price
+                    invoice.invoice_items[index].id = null
+                    invoice.invoice_items[index].invoice_number = null
+                    invoice.invoice_items[index].updated_at = null
+                    invoice.invoice_items[index].created_at = null
+
+                    console.log(invoice)
+                    commit('setInvoice', invoice)
+
+                    dispatch('updateTotals')
+                } else {
+                    let invoice = getters.invoice
+                    invoice.invoice_items[index] = {}
+                    commit('setInvoice', invoice)
+                }
+            } catch (error) {
+                console.log(error)
+                dispatch('error', error)
+            }
+            commit('setLoading', false)
+        },
+        updateInvoiceItem({ commit, dispatch }, invoice) {
+            //update item invoice
+            commit('setLoading', true)
+            //update invoice item total
+            invoice.invoice_items.forEach(item => {
+                item.total = (item.quantity * item.price)
+                item.total = item.total.toFixed(2)
+            })
+            dispatch('updateTotals')
+            commit('setInvoice', invoice)
+            commit('setLoading', false)
+        },
+        updateTotals({ commit, getters }) {
+            //update invoice totals
+            commit('setLoading', true)
+            var invoice = getters.invoice
+            var total = new Number(0);
+            invoice.invoice_items.forEach(item => {
+                total += parseFloat(item.total)
+            })
+            invoice.total_with_iva = total.toFixed(2)
+            invoice.total_without_iva = (total * 0.81).toFixed(2)
+            invoice.iva = (total * 0.19).toFixed(2)
+            commit('setInvoice', invoice)
+            commit('setLoading', false)
+        },
+        deleteInvoiceItem({ commit, getters }, itemID) {
+            //delete item invoice
+            commit('setLoading', true)
+            var invoice_items = getters.invoice.invoice_items.filter(item => item.id !== itemID)
+            commit('setInvoice', { ...getters.invoice, invoice_items })
             commit('setLoading', false)
         },
         clearState: ({ commit }) => {

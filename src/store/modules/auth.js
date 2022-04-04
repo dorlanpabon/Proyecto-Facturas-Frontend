@@ -110,15 +110,17 @@ const auth = {
                 axios.defaults.headers.common['Authorization'] = `Bearer ${context.getters.token}`
                 context.dispatch('refreshToken')
 
-                //redirect to dashboard
-                router.push('/dashboard')
             }
         },
         refreshToken: async (context) => {
             try {
                 await axios.post('/auth/me')
+                //redirect to dashboard
+                router.push('/dashboard')
             } catch (error) {
+                localStorage.removeItem('token')
                 context.dispatch('logout')
+                router.push('/')
             }
         }
     }
