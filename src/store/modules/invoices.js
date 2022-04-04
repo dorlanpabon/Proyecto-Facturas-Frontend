@@ -5,13 +5,20 @@ import axios from 'axios'
 const auth = {
     state: () => ({
         invoices: [],
+        invoicesCopy: [],
         invoice: [],
         isLoading: false,
         error: null,
         isError: false,
         customers: [],
+        orderBy: {
+            field: '',
+            order: 'desc'
+        },
     }),
     getters: {
+        invoicesCopy: state => state.invoicesCopy,
+        orderBy: state => state.orderBy,
         customers: state => state.customers,
         invoices: state => state.invoices,
         invoice: state => state.invoice,
@@ -20,6 +27,12 @@ const auth = {
         isError: state => state.isError,
     },
     mutations: {
+        setInvoicesCopy(state, invoices) {
+            state.invoicesCopy = invoices
+        },
+        setOrderBy(state, orderBy) {
+            state.orderBy = orderBy
+        },
         setCustomers(state, customers) {
             state.customers = customers
         },
@@ -85,6 +98,7 @@ const auth = {
             try {
                 const response = await axios.get('/invoices')
                 commit('setInvoices', response.data)
+                commit('setInvoicesCopy', response.data)
             } catch (error) {
                 dispatch('error', error)
             }
@@ -220,6 +234,84 @@ const auth = {
             var invoice_items = getters.invoice.invoice_items.filter(item => item.id !== itemID)
             commit('setInvoice', { ...getters.invoice, invoice_items })
             dispatch('updateTotals')
+            commit('setLoading', false)
+        },
+        orderByField({ commit, getters }, { field, order }) {
+            //if order is null, set order to asc
+            if (order == null) {
+                order = 'asc'
+            }
+            //if order is asc, set order to desc
+            if (order == 'asc') {
+                // if field is the same, set order to desc
+                if (getters.orderBy.field == field && getters.orderBy.order == 'asc') {
+                    order = 'desc'
+                }
+            } else {
+                //if order is desc, set order to asc
+                if (getters.orderBy.field == field && getters.orderBy.order == 'desc') {
+
+                    order = 'asc'
+                }
+            }
+
+            //order by
+            commit('setLoading', true)
+            var invoices = getters.invoices
+            invoices.sort((a, b) => {
+                if (order == 'asc') {
+                    //if a[field] is a numerical value
+                    if (!isNaN(a[field])) {
+                        return a[field] - b[field]
+                    } else {
+                        if (field.includes(".")) {
+                            let field_split = field.split(".")
+                            return a[field_split[0]][field_split[1]] > b[field_split[0]][field_split[1]] ? 1 : -1
+                        } else {
+                            //if a[field] is a string
+                            return a[field] > b[field] ? 1 : -1
+                        }
+                    }
+                } else {
+                    //if a[field] is a numerical value
+                    if (!isNaN(a[field])) {
+                        return b[field] - a[field]
+                    } else {
+
+                        if (field.includes(".")) {
+                            let field_split = field.split(".")
+                            return a[field_split[0]][field_split[1]] < b[field_split[0]][field_split[1]] ? 1 : -1
+                        } else {
+                            return a[field] < b[field] ? 1 : -1
+                        }
+                    }
+                }
+            })
+
+            commit('setOrderBy', { field, order })
+            commit('setInvoices', invoices)
+            commit('setLoading', false)
+        },
+        filterBy({ commit, getters }, { field, value }) {
+            commit('setInvoices', getters.invoicesCopy)
+            //filter by
+            commit('setLoading', true)
+            var invoices = getters.invoices
+            invoices = invoices.filter(invoice => {
+                //if verify if field is a numerical value
+                if (!isNaN(invoice[field])) {
+                    return invoice[field].toString().includes(value)
+                } else {
+                    if (field.includes(".")) {
+                        let field_split = field.split(".")
+                        return invoice[field_split[0]][field_split[1]].toLowerCase().includes(value.toLowerCase())
+                    } else {
+                        //if field is a string
+                        return invoice[field].toLowerCase().includes(value.toLowerCase())
+                    }
+                }
+            })
+            commit('setInvoices', invoices)
             commit('setLoading', false)
         },
         clearState: ({ commit }) => {

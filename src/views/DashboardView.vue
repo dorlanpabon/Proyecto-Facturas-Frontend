@@ -30,13 +30,257 @@
               <table class="table table-hover text-nowrap">
                 <thead>
                   <tr>
-                    <th scope="col">N Fac</th>
-                    <th scope="col">Fecha y Hora</th>
-                    <th scope="col">Emisor</th>
-                    <th scope="col">Receptor</th>
-                    <th scope="col">Sin IVA</th>
-                    <th scope="col">IVA</th>
-                    <th scope="col">Total</th>
+                    <th scope="col" colspan="8">
+                      <!-- Filter -->
+                      <div class="form-group mb-0">
+                        <div class="input-group">
+                          <input
+                            type="text"
+                            class="form-control"
+                            v-bind="{
+                              placeholder: 'Buscar ' + field,
+                            }"
+                            aria-label="Buscar"
+                            aria-describedby="basic-addon1"
+                            v-model="search"
+                            @keyup.enter="
+                              filterBy({ field: filterByField, value: search })
+                            "
+                          />
+                        </div>
+                      </div>
+                    </th>
+                  </tr>
+                  <tr>
+                    <th scope="col">
+                      <a
+                        href="#"
+                        v-on:click.prevent="
+                          orderByField({ field: 'number', order: 'desc' })
+                        "
+                        v-bind:class="{
+                          'text-primary': orderBy == 'number',
+                        }"
+                      >
+                        N Fac
+                      </a>
+                      <!-- span search for filterBy -->
+                      <span v-if="orderBy.field">
+                        <span v-if="orderBy.field == 'number'">
+                          <i
+                            v-if="orderBy.order == 'desc'"
+                            class="fas fa-sort-amount-down"
+                          ></i>
+                          <i
+                            v-if="orderBy.order == 'asc'"
+                            class="fas fa-sort-amount-up"
+                          ></i>
+                        </span>
+                      </span>
+                      <!-- span i search -->
+                      <span
+                        class="text-primary"
+                        @click="(filterByField = 'number'), (field = 'N Fac')"
+                      >
+                        <i class="fas fa-search"></i>
+                      </span>
+                    </th>
+                    <th scope="col">
+                      <a
+                        href="#"
+                        v-on:click.prevent="
+                          orderByField({ field: 'date', order: 'desc' })
+                        "
+                        v-bind:class="{
+                          'text-primary': orderBy == 'date',
+                        }"
+                      >
+                        Fecha y Hora
+                      </a>
+                      <!-- span search for filterBy -->
+                      <span v-if="orderBy.field">
+                        <span v-if="orderBy.field == 'date'">
+                          <i
+                            v-if="orderBy.order == 'desc'"
+                            class="fas fa-sort-amount-down"
+                          ></i>
+                          <i
+                            v-if="orderBy.order == 'asc'"
+                            class="fas fa-sort-amount-up"
+                          ></i>
+                        </span>
+                      </span>
+
+                      <!-- span i search -->
+                      <span
+                        class="text-primary"
+                        @click="(filterByField = 'date'), (field = 'Fecha')"
+                      >
+                        <i class="fas fa-search"></i>
+                      </span>
+                    </th>
+                    <th scope="col">
+                      <a
+                        href="#"
+                        v-on:click.prevent="
+                          orderByField({
+                            field: 'seller.name',
+                            order: 'desc',
+                          })
+                        "
+                        v-bind:class="{
+                          'text-primary': orderBy == 'seller.name',
+                        }"
+                      >
+                        Vendedor
+                      </a>
+                      <!-- span search for filterBy -->
+                      <span v-if="orderBy.field">
+                        <span v-if="orderBy.field == 'seller.name'">
+                          <i
+                            v-if="orderBy.order == 'desc'"
+                            class="fas fa-sort-amount-down"
+                          ></i>
+                          <i
+                            v-if="orderBy.order == 'asc'"
+                            class="fas fa-sort-amount-up"
+                          ></i>
+                        </span>
+                      </span>
+
+                      <!-- span i search -->
+                      <span
+                        class="text-primary"
+                        @click="
+                          (filterByField = 'seller.name'), (field = 'Vendedor')
+                        "
+                      >
+                        <i class="fas fa-search"></i>
+                      </span>
+                    </th>
+                    <th scope="col">
+                      <a
+                        href="#"
+                        v-on:click.prevent="
+                          orderByField({
+                            field: 'customer.name',
+                            order: 'desc',
+                          })
+                        "
+                        v-bind:class="{
+                          'text-primary': orderBy == 'customer.name',
+                        }"
+                      >
+                        Cliente
+                      </a>
+                      <!-- span search for filterBy -->
+                      <span v-if="orderBy.field">
+                        <span v-if="orderBy.field == 'customer.name'">
+                          <i
+                            v-if="orderBy.order == 'desc'"
+                            class="fas fa-sort-amount-down"
+                          ></i>
+                          <i
+                            v-if="orderBy.order == 'asc'"
+                            class="fas fa-sort-amount-up"
+                          ></i>
+                        </span>
+                      </span>
+                      <!-- span i search -->
+                      <span
+                        class="text-primary"
+                        @click="
+                          (filterByField = 'customer.name'),
+                            (field = 'Comprador')
+                        "
+                      >
+                        <i class="fas fa-search"></i>
+                      </span>
+                    </th>
+                    <th scope="col">
+                      <a
+                        href="#"
+                        v-on:click.prevent="
+                          orderByField({
+                            field: 'total_without_iva',
+                            order: 'desc',
+                          })
+                        "
+                        v-bind:class="{
+                          'text-primary': orderBy == 'total_without_iva',
+                        }"
+                      >
+                        Sin IVA
+                      </a>
+                      <!-- span search for filterBy -->
+                      <span v-if="orderBy.field">
+                        <span v-if="orderBy.field == 'total_without_iva'">
+                          <i
+                            v-if="orderBy.order == 'desc'"
+                            class="fas fa-sort-amount-down"
+                          ></i>
+                          <i
+                            v-if="orderBy.order == 'asc'"
+                            class="fas fa-sort-amount-up"
+                          ></i>
+                        </span>
+                      </span>
+                    </th>
+                    <th scope="col">
+                      <a
+                        href="#"
+                        v-on:click.prevent="
+                          orderByField({ field: 'iva', order: 'desc' })
+                        "
+                        v-bind:class="{
+                          'text-primary': orderBy == 'iva',
+                        }"
+                      >
+                        IVA
+                      </a>
+                      <!-- span search for filterBy -->
+                      <span v-if="orderBy.field">
+                        <span v-if="orderBy.field == 'iva'">
+                          <i
+                            v-if="orderBy.order == 'desc'"
+                            class="fas fa-sort-amount-down"
+                          ></i>
+                          <i
+                            v-if="orderBy.order == 'asc'"
+                            class="fas fa-sort-amount-up"
+                          ></i>
+                        </span>
+                      </span>
+                    </th>
+                    <th scope="col">
+                      <a
+                        href="#"
+                        v-on:click.prevent="
+                          orderByField({
+                            field: 'total_with_iva',
+                            order: 'desc',
+                          })
+                        "
+                        v-bind:class="{
+                          'text-primary': orderBy == 'total_with_iva',
+                        }"
+                      >
+                        Total
+                      </a>
+                      <!-- span search for filterBy -->
+                      <span v-if="orderBy.field">
+                        <span v-if="orderBy.field == 'total_with_iva'">
+                          <i
+                            v-if="orderBy.order == 'desc'"
+                            class="fas fa-sort-amount-down"
+                          ></i>
+                          <i
+                            v-if="orderBy.order == 'asc'"
+                            class="fas fa-sort-amount-up"
+                          ></i>
+                        </span>
+                      </span>
+                    </th>
                     <th scope="col">Op</th>
                   </tr>
                 </thead>
@@ -730,11 +974,14 @@ export default {
   data() {
     return {
       showModal: false,
+      filterByField: "number",
+      search: "",
+      field: "N Fac",
       //
     };
   },
   computed: {
-    ...mapGetters(["invoices", "invoice", "customers"]),
+    ...mapGetters(["invoices", "invoice", "customers", "orderBy"]),
   },
   methods: {
     ...mapActions([
@@ -750,6 +997,8 @@ export default {
       "getInvoiceNew",
       "updateInvoiceCustomer",
       "createInvoice",
+      "orderByField",
+      "filterBy",
     ]),
   },
   created() {
