@@ -510,7 +510,14 @@
             >
               Cerrar
             </button>
-            <button type="button" class="btn btn-primary">Guardar</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-mdb-dismiss="modal"
+              @click="updateInvoice(invoice)"
+            >
+              Guardar
+            </button>
           </div>
         </div>
       </div>
@@ -546,7 +553,7 @@ export default {
       "axiosToken",
       "getInvoice",
       "deleteInvoice",
-      "editInvoice",
+      "updateInvoice",
       "addInvoiceItem",
       "updateInvoiceItem",
       "deleteInvoiceItem",

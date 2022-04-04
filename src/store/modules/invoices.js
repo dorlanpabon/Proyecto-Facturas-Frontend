@@ -83,6 +83,7 @@ const auth = {
             try {
                 const response = await axios.put(`/invoices/${invoice.id}`, invoice)
                 commit('setInvoice', response.data)
+                dispatch('getInvoices')
             } catch (error) {
                 dispatch('error', error)
             }
@@ -166,11 +167,12 @@ const auth = {
             commit('setInvoice', invoice)
             commit('setLoading', false)
         },
-        deleteInvoiceItem({ commit, getters }, itemID) {
+        deleteInvoiceItem({ commit, getters, dispatch }, itemID) {
             //delete item invoice
             commit('setLoading', true)
             var invoice_items = getters.invoice.invoice_items.filter(item => item.id !== itemID)
             commit('setInvoice', { ...getters.invoice, invoice_items })
+            dispatch('updateTotals')
             commit('setLoading', false)
         },
         clearState: ({ commit }) => {
