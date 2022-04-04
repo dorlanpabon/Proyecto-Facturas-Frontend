@@ -9,8 +9,10 @@ const auth = {
         isLoading: false,
         error: null,
         isError: false,
+        customers: [],
     }),
     getters: {
+        customers: state => state.customers,
         invoices: state => state.invoices,
         invoice: state => state.invoice,
         isLoading: state => state.isLoading,
@@ -18,6 +20,9 @@ const auth = {
         isError: state => state.isError,
     },
     mutations: {
+        setCustomers(state, customers) {
+            state.customers = customers
+        },
         setInvoices: (state, invoices) => {
             state.invoices = invoices
         },
@@ -47,6 +52,34 @@ const auth = {
     },
     actions: {
         //actions invoices
+        getInvoiceNew: async ({ commit, dispatch }) => {
+            commit('setLoading', true)
+            //get customers
+            try {
+                const response = await axios.get('/customers')
+                commit('setCustomers', response.data)
+                commit('setInvoice',
+                    {
+                        "id": null,
+                        "number": null,
+                        "date": null,
+                        "customer_nit": null,
+                        "seller_nit": null,
+                        "total_without_iva": null,
+                        "iva": null,
+                        "total_with_iva": null,
+                        "created_at": null,
+                        "updated_at": null,
+                        "customer": {},
+                        "seller": {},
+                        "invoice_items": []
+                    })
+            } catch (error) {
+                dispatch('erorr', error)
+            }
+            commit('setLoading', false)
+
+        },
         async getInvoices({ commit, dispatch }) {
             commit('setLoading', true)
             try {
@@ -71,8 +104,10 @@ const auth = {
         async createInvoice({ commit, dispatch }, invoice) {
             commit('setLoading', true)
             try {
-                const response = await axios.post('/invoices', invoice)
-                commit('setInvoice', response.data)
+                await axios.post('/invoices', invoice)
+                commit('setInvoice', {})
+                dispatch('getInvoices')
+
             } catch (error) {
                 dispatch('error', error)
             }
@@ -139,6 +174,18 @@ const auth = {
                 console.log(error)
                 dispatch('error', error)
             }
+            commit('setLoading', false)
+        },
+        updateInvoiceCustomer({ commit, getters }, invoice) {
+            //Update invoice customer
+            commit('setLoading', true)
+            commit('setInvoice', invoice)
+            //get the customer of customers 
+            getters.customers.forEach(customer => {
+                if (customer.nit == invoice.customer_nit) {
+                    commit('setInvoice', { ...getters.invoice, customer: customer })
+                }
+            })
             commit('setLoading', false)
         },
         updateInvoiceItem({ commit, dispatch }, invoice) {

@@ -8,7 +8,21 @@
         <div class="card">
           <div class="card-header text-center py-3">
             <h5 class="mb-0 text-center">
-              <strong>Facturas de Venta</strong>
+              <strong>Facturas de Venta </strong>
+              <a
+                href="#"
+                class="btn btn-sm btn-primary"
+                v-on:click.prevent="
+                  () => {
+                    getInvoiceNew();
+                    showModal = true;
+                  }
+                "
+                data-mdb-toggle="modal"
+                data-mdb-target="#CreateInvoiceModal"
+              >
+                <i class="fas fa-plus"></i> Agregar Factura
+              </a>
             </h5>
           </div>
           <div class="card-body">
@@ -86,7 +100,7 @@
           </div>
         </div>
       </section>
-      <!--Section: Sales Performance KPIs-->
+      <!--Section: Facturas de Venta-->
     </div>
     <!-- Modal View -->
     <div
@@ -522,6 +536,181 @@
         </div>
       </div>
     </div>
+    <!-- Modal Create -->
+    <div
+      class="modal top fade"
+      id="CreateInvoiceModal"
+      tabindex="-1"
+      aria-labelledby="CreateInvoiceModalLabel"
+      aria-hidden="true"
+      data-mdb-backdrop="true"
+      data-mdb-keyboard="true"
+    >
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="CreateInvoiceModalLabel">
+              Editar Factura
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-mdb-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body" v-if="invoice.id == null">
+            <!-- Edit Invoice -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="">NIT Cliente</label>
+
+                  <!-- Select of customers -->
+                  <select
+                    class="form-control"
+                    v-model="invoice.customer_nit"
+                    @change="updateInvoiceCustomer(invoice)"
+                  >
+                    <option value="">Seleccione un cliente</option>
+                    <option
+                      v-for="customer in customers"
+                      :value="customer.nit"
+                      :key="customer.id"
+                    >
+                      {{ customer.nit }} - {{ customer.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="">Nombre Cliente</label>
+                  <input
+                    v-if="invoice.customer_nit"
+                    type="text"
+                    class="form-control"
+                    v-model="invoice.customer.name"
+                    readonly
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="table-responsive">
+                <table class="table table-hover text-nowrap">
+                  <thead>
+                    <tr>
+                      <th>Código</th>
+                      <th>Producto</th>
+                      <th>Cantidad</th>
+                      <th>Precio</th>
+                      <th>Subtotal</th>
+                      <th>Op</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(item, index) in invoice.invoice_items"
+                      :key="index"
+                    >
+                      <td>
+                        <input
+                          type="text"
+                          class="form-control"
+                          v-model="item.item_id"
+                          @change="updateInvoiceItemId({ item, index })"
+                        />
+                      </td>
+                      <td>{{ item.description }}</td>
+                      <td>
+                        <input
+                          type="number"
+                          class="form-control"
+                          v-model="item.quantity"
+                          @change="updateInvoiceItem(invoice)"
+                        />
+                      </td>
+                      <td>{{ item.price }}</td>
+                      <td>{{ item.total }}</td>
+                      <td>
+                        <button
+                          type="button"
+                          class="btn btn-danger btn-sm"
+                          v-on:click.prevent="deleteInvoiceItem(item.id)"
+                        >
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="6">
+                        <button
+                          type="button"
+                          class="btn btn-success btn-sm"
+                          v-on:click.prevent="addInvoiceItem()"
+                        >
+                          <i class="fas fa-plus"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="3" class="text-right"></td>
+                      <td colspan="1" class="text-right">
+                        <strong>Total sin IVA</strong>
+                      </td>
+                      <td>{{ invoice.total_without_iva }}</td>
+                      <td colspan="1" class="text-right"></td>
+                    </tr>
+                    <tr>
+                      <td colspan="3" class="text-right"></td>
+                      <td colspan="1" class="text-right">
+                        <strong>IVA</strong>
+                      </td>
+                      <td>{{ invoice.iva }}</td>
+                      <td colspan="1" class="text-right"></td>
+                    </tr>
+                    <tr>
+                      <td colspan="3" class="text-right"></td>
+                      <td colspan="1" class="text-right">
+                        <strong>Total</strong>
+                      </td>
+                      <td>{{ invoice.total_with_iva }}</td>
+                      <td colspan="1" class="text-right"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div
+            class="modal-footer"
+            v-if="
+              invoice.customer_nit &&
+              invoice.invoice_items.length &&
+              invoice.total_with_iva > 0
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-mdb-dismiss="modal"
+            >
+              Cerrar
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-mdb-dismiss="modal"
+              @click="createInvoice(invoice)"
+            >
+              Guardar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 </template>
 
@@ -545,7 +734,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["invoices", "invoice"]),
+    ...mapGetters(["invoices", "invoice", "customers"]),
   },
   methods: {
     ...mapActions([
@@ -558,6 +747,9 @@ export default {
       "updateInvoiceItem",
       "deleteInvoiceItem",
       "updateInvoiceItemId",
+      "getInvoiceNew",
+      "updateInvoiceCustomer",
+      "createInvoice",
     ]),
   },
   created() {
